@@ -1,46 +1,80 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
+
 import { fetchCountries } from "@/lib/features/countries/countriesSlice";
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  Grid,
+  Typography,
+} from "@mui/material";
+import Image from "next/image";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Countries = () => {
   const countries = useSelector((state) => state.countries.countries);
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleCountryClick = (countryName) => {
+    // Create URL-friendly slug
+    const slug = countryName.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/countries/${encodeURIComponent(slug)}`);
+  };
 
   useEffect(() => {
     dispatch(fetchCountries());
   }, [dispatch]);
 
-  console.log("Countries:", countries);
+  if (countries.length === 0) {
+    return <div>Loading...</div>;
+  }
 
   const getCurrencies = (country) => {
     if (!country.currencies) return "N/A";
     return Object.values(country.currencies)
-      .map((currency) => currency.name)
+      .map((currency) => `${currency.name} (${currency.symbol})`)
       .join(", ");
   };
 
   return (
-    <div>
-      <h1>Countries</h1>
-      <p>Total Countries: {countries.length}</p>
-      <ul>
-        {countries.map((country, index) => (
-          <li key={index}>
-            <h2>{country.name.common}</h2>
-            <p>Population: {country.population.toLocaleString()}</p>
-            <p>Currencies: {getCurrencies(country)}</p>
-            {country.flags && country.flags.png && (
-              <img
-                src={country.flags.png}
-                alt={`Flag of ${country.name.common}`}
-                width="100"
-              />
-            )}
-          </li>
+    <>
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        {countries.map((country) => (
+          <Card
+            key={country.name.common}
+            sx={{ width: "200px", height: "200px" }}
+          >
+            <CardActionArea
+              onClick={() => handleCountryClick(country.name.common)}
+            >
+              <CardContent>
+                <Image
+                  width={100}
+                  height={100}
+                  style={{ objectFit: "cover" }}
+                  src={country.flags.svg}
+                  alt={country.name.common}
+                />
+                <Typography variant="h6">{country.name.common}</Typography>
+                <Typography variant="body1">{country.population}</Typography>
+                <Typography variant="body1">
+                  {country && getCurrencies(country)}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
         ))}
-      </ul>
-    </div>
+      </Grid>
+    </>
   );
 };
 
