@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "../context/authContext";
 import ProfileManager from "@/components/ProfileManager";
 import { fetchProfile } from "@/lib/features/profile/profileSlice";
 import { Box, Typography } from "@mui/material";
