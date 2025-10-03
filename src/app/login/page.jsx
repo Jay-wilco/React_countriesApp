@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase/supabase";
 import { Box, Paper, Typography } from "@mui/material";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import AuthRedirect from "./AuthRedirect";
 
 const Login = () => {
