@@ -12,6 +12,7 @@ export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
+      // Import supabase client to get current session
       const { supabase } = await import("@/lib/supabase/supabase");
       const {
         data: { session },
@@ -48,6 +49,7 @@ export const updateProfile = createAsyncThunk(
   "profile/updateProfile",
   async (profileData, { rejectWithValue }) => {
     try {
+      // Import supabase client to get current session
       const { supabase } = await import("@/lib/supabase/supabase");
       const {
         data: { session },
@@ -85,6 +87,7 @@ export const uploadAvatar = createAsyncThunk(
   "profile/uploadAvatar",
   async (file, { rejectWithValue }) => {
     try {
+      // Import supabase client to get current session
       const { supabase } = await import("@/lib/supabase/supabase");
       const {
         data: { session },

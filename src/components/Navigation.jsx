@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
-const { useAuth } = require("@/app/context/authContext");
+const { useAuth } = require("@/app/context/AuthContext");
 const { AppBar, Toolbar, Button } = require("@mui/material");
 
 const Navigation = ({ children }) => {
@@ -23,10 +23,16 @@ const Navigation = ({ children }) => {
             Protected
           </Button>
           {user && (
+            <Button color="inherit" onClick={() => router.push("/profile")}>
+              Profile
+            </Button>
+          )}
+          {user && (
             <Button color="inherit" onClick={() => signOut()}>
               Logout
             </Button>
           )}
+
           {!user && (
             <Button color="inherit" onClick={() => router.push("/login")}>
               Login
