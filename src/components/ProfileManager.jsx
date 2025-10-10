@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "../app/context/authContext";
+import { useAuth } from "../app/context/AuthContext";
 import {
   fetchProfile,
   selectProfile,

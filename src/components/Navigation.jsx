@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
-const { useAuth } = require("../app/context/authContext");
+const { useAuth } = require("../app/context/AuthContext");
 const { AppBar, Toolbar, Button } = require("@mui/material");
 
 const Navigation = ({ children }) => {
