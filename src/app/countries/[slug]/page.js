@@ -293,7 +293,7 @@ const CountryPage = () => {
             )}
 
             {/* Map */}
-            {selectedCountry.latlng && (
+            {selectedCountry.capital?.[0] && (
               <Card>
                 <CardContent>
                   <Typography variant="h5" gutterBottom>
@@ -313,7 +313,9 @@ const CountryPage = () => {
                       height="100%"
                       frameBorder="0"
                       style={{ border: 0 }}
-                      src={`https://www.google.com/maps?q=${selectedCountry.latlng[0]},${selectedCountry.latlng[1]}&hl=en&z=5&output=embed`}
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                        selectedCountry.capital[0]
+                      )}&t=&z=5&ie=UTF8&iwloc=&output=embed`}
                       allowFullScreen
                     />
                   </Box>

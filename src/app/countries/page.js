@@ -38,6 +38,9 @@ const Countries = () => {
       .map((currency) => `${currency.name} (${currency.symbol})`)
       .join(", ");
   };
+  const formatPopulation = (population) => {
+    return new Intl.NumberFormat().format(population);
+  };
 
   return (
     <>
@@ -65,7 +68,10 @@ const Countries = () => {
                   alt={country.name.common}
                 />
                 <Typography variant="h6">{country.name.common}</Typography>
-                <Typography variant="body1">{country.population}</Typography>
+                <Typography variant="body1">
+                  <strong>Population:</strong>{" "}
+                  {formatPopulation(country.population)}
+                </Typography>
                 <Typography variant="body1">
                   {country && getCurrencies(country)}
                 </Typography>
