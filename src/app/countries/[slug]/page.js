@@ -1,8 +1,9 @@
 "use client";
+import { useAuth } from "@/app/context/AuthContext";
+import FavouriteButton from "@/components/FavouriteButton";
 import {
   clearSelectedCountry,
   setSelectedCountry,
-  selectCountryByName,
   fetchCountries,
 } from "@/lib/features/countries/countriesSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -23,35 +24,22 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const CountryPage = () => {
-  // 1. Get URL parameters and setup hooks
   const { slug } = useParams();
   const router = useRouter();
   const dispatch = useDispatch();
-
-  // 2. Get country data from Redux store
+  const { user } = useAuth();
   const { selectedCountry, loading, error, countries } = useSelector(
     (state) => state.countries
   );
 
-  useEffect(() => {
-    if (countries.length === 0) {
-      dispatch(fetchCountries());
-    }
-  });
-
-  // 3. Weather state (we'll add this functionality later)
-  // Add to the existing useState declarations
   const [weatherData, setWeatherData] = useState(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState(null);
 
-  // Add this function before the useEffect hooks
   const fetchWeatherData = async (capital) => {
     if (!capital) return;
-
     setWeatherLoading(true);
     setWeatherError(null);
-
     try {
       const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHERAPI;
       const response = await fetch(
@@ -59,11 +47,7 @@ const CountryPage = () => {
           capital
         )}&appid=${API_KEY}&units=metric`
       );
-
-      if (!response.ok) {
-        throw new Error("Weather data not available");
-      }
-
+      if (!response.ok) throw new Error("Weather data not available");
       const data = await response.json();
       setWeatherData(data);
     } catch (err) {
@@ -73,45 +57,32 @@ const CountryPage = () => {
     }
   };
 
-  // Add this useEffect after the existing one
   useEffect(() => {
-    if (selectedCountry?.capital?.[0]) {
+    if (countries.length === 0) dispatch(fetchCountries());
+  }, [countries.length, dispatch]);
+
+  useEffect(() => {
+    if (selectedCountry?.capital?.[0])
       fetchWeatherData(selectedCountry.capital[0]);
-    }
   }, [selectedCountry]);
 
-  // 4. Find and set country data from existing store data
   useEffect(() => {
     if (slug && countries.length > 0) {
-      // Convert URL slug back to country name
       const countryName = decodeURIComponent(slug.replace(/-/g, " "));
-      // Find country in existing data (no API call needed!)
       const foundCountry = countries.find(
-        (country) =>
-          country.name.common.toLowerCase() === countryName.toLowerCase() ||
-          country.name.official.toLowerCase() === countryName.toLowerCase()
+        (c) =>
+          c.name.common.toLowerCase() === countryName.toLowerCase() ||
+          c.name.official.toLowerCase() === countryName.toLowerCase()
       );
-
-      if (foundCountry) {
-        dispatch(setSelectedCountry(foundCountry));
-      } else {
-        dispatch(clearSelectedCountry());
-      }
+      if (foundCountry) dispatch(setSelectedCountry(foundCountry));
+      else dispatch(clearSelectedCountry());
     }
-
-    // Cleanup when component unmounts
-    return () => {
-      dispatch(clearSelectedCountry());
-    };
+    return () => dispatch(clearSelectedCountry());
   }, [slug, countries, dispatch]);
 
-  // 5. Navigation handler
-  const handleBack = () => {
-    router.push("/countries");
-  };
+  const handleBack = () => router.push("/countries");
 
-  // 6. Loading state - only when countries data is being fetched initially
-  if (loading || countries.length === 0) {
+  if (loading || countries.length === 0)
     return (
       <Box
         display="flex"
@@ -122,10 +93,8 @@ const CountryPage = () => {
         <Typography variant="h6">Loading countries data...</Typography>
       </Box>
     );
-  }
 
-  // 7. Error state
-  if (error) {
+  if (error)
     return (
       <Box
         display="flex"
@@ -147,10 +116,8 @@ const CountryPage = () => {
         </Button>
       </Box>
     );
-  }
 
-  // 8. No data state
-  if (!selectedCountry) {
+  if (!selectedCountry)
     return (
       <Box
         display="flex"
@@ -170,13 +137,11 @@ const CountryPage = () => {
         </Button>
       </Box>
     );
-  }
 
-  // 9. Helper functions for data formatting
   const getCurrencies = (country) => {
     if (!country.currencies) return "N/A";
     return Object.values(country.currencies)
-      .map((currency) => `${currency.name} (${currency.symbol})`)
+      .map((c) => `${c.name} (${c.symbol})`)
       .join(", ");
   };
 
@@ -185,14 +150,10 @@ const CountryPage = () => {
     return Object.values(country.languages).join(", ");
   };
 
-  const formatPopulation = (population) => {
-    return new Intl.NumberFormat().format(population);
-  };
+  const formatPopulation = (pop) => new Intl.NumberFormat().format(pop);
 
-  // 10. Main component render
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", p: 3 }}>
-      {/* Back Button */}
       <Button
         variant="outlined"
         onClick={handleBack}
@@ -202,10 +163,9 @@ const CountryPage = () => {
         Back to Countries
       </Button>
 
-      {/* Main Content */}
       <Paper elevation={3} sx={{ p: 4 }}>
         <Grid container spacing={4}>
-          {/* Flag and Basic Info */}
+          {/* Left Column: Flag + Name + Favourite + Details */}
           <Grid item xs={12} md={6}>
             <Card sx={{ height: "100%" }}>
               <CardContent>
@@ -215,6 +175,7 @@ const CountryPage = () => {
                   alignItems="center"
                   gap={3}
                 >
+                  {/* Flag */}
                   <Image
                     width={300}
                     height={200}
@@ -229,59 +190,42 @@ const CountryPage = () => {
                     alt={`Flag of ${selectedCountry.name?.common}`}
                     priority
                   />
-                  <Box textAlign="center">
-                    <Typography variant="h3" component="h1" gutterBottom>
+
+                  {/* Name + Favourite */}
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="h3" component="h1">
                       {selectedCountry.name?.common}
                     </Typography>
+                    {user && <FavouriteButton country={selectedCountry} />}
                   </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
 
-          {/* Detailed Information */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  Country Details
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Box display="flex" flexDirection="column" gap={2}>
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Population
-                    </Typography>
+                  {/* Country Details */}
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap={1}
+                    width="100%"
+                  >
                     <Typography variant="body1">
+                      <strong>Population:</strong>{" "}
                       {formatPopulation(selectedCountry.population)}
                     </Typography>
-                  </Box>
-
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Capital
-                    </Typography>
                     <Typography variant="body1">
+                      <strong>Capital:</strong>{" "}
                       {selectedCountry.capital?.join(", ") || "N/A"}
                     </Typography>
-                  </Box>
-
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Languages
+                    <Typography variant="body1">
+                      <strong>Currencies:</strong>{" "}
+                      {getCurrencies(selectedCountry)}
                     </Typography>
-                    <Box sx={{ mt: 1 }}>
+                    <Typography variant="body1">
+                      <strong>Languages:</strong>
+                    </Typography>
+                    <Box display="flex" flexWrap="wrap" gap={1}>
                       {getLanguages(selectedCountry)
                         .split(", ")
-                        .map((language, index) => (
-                          <Chip
-                            key={index}
-                            label={language}
-                            variant="outlined"
-                            size="small"
-                            sx={{ mr: 1, mb: 1 }}
-                          />
+                        .map((lang, index) => (
+                          <Chip key={index} label={lang} size="small" />
                         ))}
                     </Box>
                   </Box>
@@ -289,110 +233,95 @@ const CountryPage = () => {
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
-        {/* Weather Section */}
-        {selectedCountry?.capital?.[0] && (
-          <Grid container spacing={4} sx={{ mt: 2 }}>
-            <Grid item xs={12}>
+
+          {/* Right Column: Weather + Map */}
+          <Grid
+            item
+            xs={12}
+            md={6}
+            display="flex"
+            flexDirection="column"
+            gap={3}
+          >
+            {/* Weather */}
+            {weatherData && (
               <Card>
                 <CardContent>
                   <Typography variant="h5" gutterBottom>
                     Weather in {selectedCountry.capital[0]}
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    flexWrap="wrap"
+                    gap={2}
+                  >
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Image
+                        width={80}
+                        height={80}
+                        src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
+                        alt={weatherData.weather[0].description}
+                      />
+                      <Box>
+                        <Typography variant="h3">
+                          {Math.round(weatherData.main.temp)}°C
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {weatherData.weather[0].main}
+                        </Typography>
+                      </Box>
+                    </Box>
 
-                  {weatherLoading && (
-                    <Box
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      minHeight="200px"
-                    >
-                      <Typography variant="body1">
-                        Loading weather data...
+                    <Box display="flex" flexDirection="column" gap={1}>
+                      <Typography>
+                        <strong>Humidity:</strong> {weatherData.main.humidity}%
+                      </Typography>
+                      <Typography>
+                        <strong>Wind Speed:</strong> {weatherData.wind.speed}{" "}
+                        m/s
+                      </Typography>
+                      <Typography>
+                        <strong>Feels like:</strong>{" "}
+                        {Math.round(weatherData.main.feels_like)}°C
                       </Typography>
                     </Box>
-                  )}
-
-                  {weatherError && (
-                    <Box
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      minHeight="200px"
-                    >
-                      <Typography variant="body1" color="error">
-                        {weatherError}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {weatherData && !weatherLoading && (
-                    <Grid container spacing={3}>
-                      {/* Current Weather */}
-                      <Grid item xs={12} md={6}>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="center"
-                          gap={2}
-                        >
-                          <Box display="flex" alignItems="center" gap={2}>
-                            <Image
-                              width={80}
-                              height={80}
-                              src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
-                              alt={weatherData.weather[0].description}
-                            />
-                            <Box>
-                              <Typography variant="h3" component="div">
-                                {Math.round(weatherData.main.temp)}°C
-                              </Typography>
-                              <Typography variant="h6" color="text.secondary">
-                                {weatherData.weather[0].main}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Box>
-                      </Grid>
-
-                      {/* Weather Details */}
-                      <Grid item xs={12} md={6}>
-                        <Box display="flex" flexDirection="column" gap={1.5}>
-                          <Box display="flex" justifyContent="space-between">
-                            <Typography variant="body1" fontWeight="bold">
-                              Humidity:
-                            </Typography>
-                            <Typography variant="body1">
-                              {weatherData.main.humidity}%
-                            </Typography>
-                          </Box>
-                          <Box display="flex" justifyContent="space-between">
-                            <Typography variant="body1" fontWeight="bold">
-                              Wind Speed:
-                            </Typography>
-                            <Typography variant="body1">
-                              {weatherData.wind.speed} m/s
-                            </Typography>
-                          </Box>
-                          <Box display="flex" justifyContent="space-between">
-                            <Typography variant="body1" fontWeight="bold">
-                              Feels like:
-                            </Typography>
-                            <Typography variant="body1">
-                              {Math.round(weatherData.main.feels_like)}°C
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  )}
+                  </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            )}
+
+            {/* Map */}
+            {selectedCountry.latlng && (
+              <Card>
+                <CardContent>
+                  <Typography variant="h5" gutterBottom>
+                    Location Map
+                  </Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  <Box
+                    sx={{
+                      width: "100%",
+                      height: 300,
+                      borderRadius: 2,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      style={{ border: 0 }}
+                      src={`https://www.google.com/maps?q=${selectedCountry.latlng[0]},${selectedCountry.latlng[1]}&hl=en&z=5&output=embed`}
+                      allowFullScreen
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            )}
           </Grid>
-        )}
-        ;
+        </Grid>
       </Paper>
     </Box>
   );

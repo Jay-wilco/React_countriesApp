@@ -1,8 +1,12 @@
+import Navigation from "@/components/Navigation";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import { AuthProvider } from "./context/AuthContext";
-import Navigation from "@/components/Navigation";
 import { CustomThemeProvider } from "./context/ThemeContext";
 
 const geistSans = Geist({

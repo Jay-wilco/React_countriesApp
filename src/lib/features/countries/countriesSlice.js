@@ -3,7 +3,7 @@ import axios from "axios";
 
 // ✅ RECOMMENDED - One API call with all data
 const api =
-  "https://restcountries.com/v3.1/all?fields=name,flags,population,currencies,capital,languages,region,subregion,area,timezones";
+  "https://restcountries.com/v3.1/all?fields=name,flags,population,currencies,capital,languages,region,subregion,area,latlng";
 
 const initialState = {
   countries: [],
@@ -13,7 +13,7 @@ const initialState = {
 };
 
 export const fetchCountries = createAsyncThunk(
-  "countries/countries",
+  "countries/fetchAll",
   async () => {
     const response = await axios.get(api);
 

@@ -6,7 +6,6 @@ import Image from "next/image";
 
 const Protected = () => {
   const { user, loading } = useAuth();
-  console.log(user);
 
   if (loading) {
     return (
