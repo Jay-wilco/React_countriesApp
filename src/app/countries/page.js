@@ -16,10 +16,12 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
 } from "@mui/material";
 import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Image from "next/image";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 const Countries = () => {
   const dispatch = useDispatch();
@@ -28,6 +30,15 @@ const Countries = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("nameAsc");
+  const [showScroll, setShowScroll] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchCountries());
@@ -169,7 +180,6 @@ const Countries = () => {
           </Select>
         </FormControl>
       </Box>
-
       {/* COUNTRY CARDS */}
       <Grid container spacing={2} justifyContent="center">
         {filteredCountries.map((country) => (
@@ -234,8 +244,39 @@ const Countries = () => {
           </Grid>
         ))}
       </Grid>
+      {/* Back to Top Button */}
+      {showScroll && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          sx={(theme) => ({
+            position: "fixed",
+            bottom: 32,
+            right: 32,
+            borderRadius: "50%",
+            minWidth: "56px",
+            minHeight: "56px",
+            zIndex: 1200,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            backgroundColor:
+              theme.palette.mode === "light"
+                ? "rgba(25,118,210,0.85)"
+                : "rgba(144,202,249,0.85)",
+            "&:hover": {
+              backgroundColor:
+                theme.palette.mode === "light"
+                  ? "rgba(25,118,210,1)"
+                  : "rgba(144,202,249,1)",
+              transform: "translateY(-3px)",
+            },
+            transition: "all 0.3s ease",
+          })}
+        >
+          <ArrowUpwardIcon />
+        </Button>
+      )}
     </Box>
   );
 };
-
 export default Countries;
