@@ -79,24 +79,25 @@ const Countries = () => {
 
   return (
     <Box
-      sx={{
-        position: "relative",
+      sx={(theme) => ({
         minHeight: "100vh",
-        backgroundImage: `url("/images/earth1.jpg")`,
+        backgroundImage:
+          theme.palette.mode === "light"
+            ? 'url("/images/pexels-pixabay-sun.jpg")'
+            : 'url("/images/pexels-pixabay-moon2.jpg")',
         backgroundSize: "cover",
-        backgroundPosition: "top center",
+        backgroundPosition: "center",
         backgroundAttachment: "fixed",
+        transition:
+          "background-image 0.6s ease-in-out, filter 0.5s ease-in-out",
+        filter:
+          theme.palette.mode === "light"
+            ? "brightness(0.9)"
+            : "brightness(0.6)",
         paddingTop: "80px",
         paddingX: 2,
         paddingBottom: 4,
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          inset: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.55)", // darkness level here
-          zIndex: 0,
-        },
-      }}
+      })}
     >
       {/* SEARCH + SORT */}
       <Box
@@ -230,7 +231,14 @@ const Countries = () => {
                     gap: 0.5,
                   }}
                 >
-                  <Typography variant="h5">{country.name.common}</Typography>
+                  <Typography
+                    variant="h5"
+                    sx={(theme) => ({
+                      color: theme.palette.mode === "dark" ? "#fff" : "#222",
+                    })}
+                  >
+                    {country.name.common}
+                  </Typography>
                   <Typography variant="body2">
                     <strong>Population:</strong>{" "}
                     {country.population.toLocaleString()}
