@@ -19,8 +19,6 @@ const FavouriteButton = ({ country }) => {
   );
   const loading = useSelector((state) => state.favourites.loading);
 
-  // debug logs
-
   const toggleFavourite = () => {
     if (isFavourite) {
       dispatch(removeFavourite(country.name.common));

@@ -14,12 +14,15 @@ const Navigation = ({ children }) => {
     <div>
       <AppBar position="static" color="gradient" sx={{ mb: 3 }}>
         <Toolbar>
+          <Button color="inherit" onClick={() => router.push("/")}>
+            Home
+          </Button>
           <Button color="inherit" onClick={() => router.push("/countries")}>
             Countries
           </Button>
-          <Button color="inherit" onClick={() => router.push("/example")}>
+          {/* <Button color="inherit" onClick={() => router.push("/example")}>
             Example
-          </Button>
+          </Button> */}
           <Button color="inherit" onClick={() => router.push("/protected")}>
             Protected
           </Button>
