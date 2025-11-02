@@ -1,6 +1,6 @@
 "use client";
-import { useAuth } from "@/app/context/AuthContext";
-import FavouriteButton from "@/components/FavouriteButton";
+import { useAuth } from "../../app/context/AuthContext";
+import FavouriteButton from "../../components/FavouriteButton";
 import {
   clearSelectedCountry,
   setSelectedCountry,
