@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useScrollPosition } from "@/hooks/useScrollPosition";
+import { useScrollPosition } from "../../hooks/useScrollPosition";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { Button, Zoom } from "@mui/material";
 

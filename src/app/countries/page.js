@@ -22,7 +22,7 @@ import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Image from "next/image";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import BackToTopButton from "@/components/BackToTopBtn";
+import BackToTopButton from "@/components/BackToTopButton";
 
 const Countries = () => {
   const dispatch = useDispatch();
