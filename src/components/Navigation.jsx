@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
-
-const { useAuth } = from("@/app/context/AuthContext");
-const { AppBar, Toolbar, Button } = require("@mui/material");
+import { useAuth } from "@/app/context/AuthContext";
+import { AppBar, Toolbar, Button } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const Navigation = ({ children }) => {
   const { user, signOut } = useAuth();
