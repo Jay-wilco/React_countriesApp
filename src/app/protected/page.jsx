@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import AuthRedirect from "../login/AuthRedirect";
 import Image from "next/image";

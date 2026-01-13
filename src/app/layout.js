@@ -6,8 +6,8 @@ import "@fontsource/roboto/700.css";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
-import { AuthProvider } from "./context/AuthContext";
-import { CustomThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "@/app/context/AuthContext";
+import { CustomThemeProvider } from "@/app/context/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

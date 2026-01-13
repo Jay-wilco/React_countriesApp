@@ -1,6 +1,6 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import { useEffect } from "react";
 import { fetchFavourites } from "@/lib/features/favourites/favouritesSlice";
 import {
