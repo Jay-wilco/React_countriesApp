@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
 
 export const AuthRedirect = () => {
