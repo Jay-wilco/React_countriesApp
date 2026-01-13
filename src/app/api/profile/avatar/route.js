@@ -1,7 +1,8 @@
 import {
   getAuthenticatedUser,
-  supabaseServer,
+  getSupabaseServerClient,
 } from "@/lib/supabase/supabase-server";
+
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -9,6 +10,12 @@ export async function POST(request) {
     const { user, error: authError } = await getAuthenticatedUser(request);
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    let supabaseServer;
+    try {
+      supabaseServer = getSupabaseServerClient();
+    } catch (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     const formData = await request.formData();
@@ -85,7 +92,7 @@ export async function POST(request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: error?.message || "Internal server error" },
       { status: 500 }
     );
   }

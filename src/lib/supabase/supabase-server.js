@@ -1,20 +1,19 @@
-// Server-side Supabase client for API routes
 import { createClient } from "@supabase/supabase-js";
 
-// Create a Supabase client with service role key for server-side operations
-// This bypasses RLS but we'll implement our own security checks in API routes
-export const supabaseServer = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY, // This should be added to your .env.local
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
+export function getSupabaseServerClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Helper function to verify user authentication from request headers
+  if (!url || !serviceKey) {
+    throw new Error("Missing Supabase server environment variables");
+  }
+
+  return createClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
+// keep your getAuthenticatedUser export as-is (but also guard env vars inside it)
 export const getAuthenticatedUser = async (request) => {
   try {
     const authHeader = request.headers.get("authorization");
@@ -24,13 +23,16 @@ export const getAuthenticatedUser = async (request) => {
 
     const token = authHeader.split(" ")[1];
 
-    // Verify the JWT token using the client-side supabase instance
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !anonKey) {
+      return {
+        user: null,
+        error: "Missing Supabase public environment variables",
+      };
+    }
 
+    const supabase = createClient(url, anonKey);
     const {
       data: { user },
       error,
